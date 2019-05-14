@@ -1,9 +1,8 @@
 #include <WiFi.h>
 
-//const ints are just ints that don't change
 //Needed to log into the Wifi
 const char* ssid = ""; //fill in SSID here
-const char* password = ""; //
+const char* password = ""; //fill in password here
 
 WiFiServer server(80); //80 is the default HTTP port
 
@@ -15,10 +14,8 @@ const int output39 = 39;
 int moistlvl = analogRead(A0); //Reads the soil sensor
 
 void setup() {
-  Serial.begin(115200); //opens serial monitor port
-  // Initialize the output variables as outputs
+  Serial.begin(115200); 
   pinMode(output39, OUTPUT);
-  // Set outputs to LOW
   digitalWrite(output39, LOW);
 
   // Connection to Wifi
@@ -37,17 +34,15 @@ void setup() {
 }
 
 void loop(){
-  WiFiClient client = server.available();   // Listen for incoming clients
+  WiFiClient client = server.available();  
   if (client) {
-    String currentLine = "";                // make a String to hold incoming data from the client
-    while (client.connected()) {            // loop while the client's connected
-      if (client.available()) {             // if there's bytes to read from the client,
-        char c = client.read();             // read a byte, then
-        Serial.write(c);                    // print it out the serial monitor
+    String currentLine = "";                
+    while (client.connected()) {           
+      if (client.available()) {           
+        char c = client.read();    
+        Serial.write(c);     
         request += c;
-        if (c == '\n') {                    // if the byte is a newline character
-          // if the current line is blank, you got two newline characters in a row.
-          // that's the end of the client HTTP request, so send a response:
+        if (c == '\n') {                   
           if (currentLine.length() == 0) {
             
             // turns the GPIOs on and off
@@ -79,19 +74,16 @@ void loop(){
             }
             client.println("</body></html>");
             
-            // The HTTP response ends with another blank line
             client.println();
-            // Break out of the while loop
             break;
-          } else { // if you got a newline, then clear currentLine
+          } else {
             currentLine = "";
           }
-        } else if (c != '\r') {  // if you got anything else but a carriage return character,
-          currentLine += c;      // add it to the end of the currentLine
+        } else if (c != '\r') { 
+          currentLine += c;  
         }
       }
     }
-    // Clear the header variable
     request = "";
     client.stop();
   }
